@@ -151,9 +151,9 @@ def consultar(bot,update, user_data):
     global dataAlertaMaisRecente
     global dataInadimplenciaMaisRecente
     if dataAlertaMaisRecente is not None:
-        msgConsulta +=  '\nO último registro de alerta foi feito em {}'.format(dataAlertaMaisRecente)
+        msgConsulta +=  '\nO último registro de alerta foi feito em {}.'.format(dataAlertaMaisRecente.strftime('%d/%m/%Y'))
     if dataInadimplenciaMaisRecente is not None:
-        msgConsulta +=  '\nO último registro de inadimplência foi feito em {}'.format(dataInadimplenciaMaisRecente)
+        msgConsulta +=  '\nO último registro de inadimplência foi feito em {}.'.format(dataInadimplenciaMaisRecente.strftime('%d/%m/%Y'))
 
     bot.send_message(update.message.chat_id, text=msgConsulta)
     bot.send_message(update.message.chat_id,
