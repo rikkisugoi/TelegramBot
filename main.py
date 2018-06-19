@@ -110,6 +110,7 @@ def consultar(bot,update, user_data):
     #print(type(result.consumidor))
     #print(dir(result))
 
+    #CRIAR FUNÇÃO MAPEIA RESPONSE
     alerta = result['alerta-documento']['resumo']['quantidade-total']
     data = result['alerta-documento']['resumo']['data-ultima-ocorrencia']
     compararDatas(data,'alerta')
@@ -135,25 +136,60 @@ def consultar(bot,update, user_data):
     #inadimplencia += result['contumacia']['resumo']['quantidade-total']
 
     if user_data['tipo_pessoa'] == 'F':
-        nomeConsumidor =result['consumidor']['consumidor-pessoa-fisica']['nome']
+        nomeConsumidor = result['consumidor']['consumidor-pessoa-fisica']['nome']
+        numDocumento = result['consumidor']['consumidor-pessoa-fisica']['cpf']['numero']
     elif user_data['tipo_pessoa'] == 'J':
-        nomeConsumidor =result['consumidor']['consumidor-pessoa-juridica']['nome-comercial']        
+        nomeConsumidor = result['consumidor']['consumidor-pessoa-juridica']['nome-comercial']
+        numDocumento = result['consumidor']['consumidor-pessoa-juridica']['cnpj']['numero']        
 
-    msgConsulta = ''
-    if alerta > 0 and inadimplencia > 0:
-        msgConsulta += 'Existe(m) {} registro(s) de alertas e {} registro(s) de inadimplência.'.format(inadimplencia, alerta)
-    elif alerta > 0:
-        msgConsulta += 'Existe(m) {} registro(s) de alertas.'.format(alerta)
-    elif inadimplencia > 0:
-        msgConsulta += 'Existe(m) {} registro(s) de inadimplência.'.format(inadimplencia)
-    msgConsulta += '\nO documento consultado pertence a {}.'.format(nomeConsumidor)
-
+    
+    NADA_CONSTA = 'NADA CONSTA'
     global dataAlertaMaisRecente
     global dataInadimplenciaMaisRecente
+
+    msgConsulta = 'NOME: ' + nomeConsumidor
+    msgConsulta += '\nN° DOCUMENTO: ' + str(numDocumento)
+    if alerta > 0:
+        msgConsulta += '\n\nALERTAS: ' + str(alerta)
+    else:
+        msgConsulta += '\n\nALERTAS: ' + NADA_CONSTA
+
     if dataAlertaMaisRecente is not None:
-        msgConsulta +=  '\nO último registro de alerta foi feito em {}.'.format(dataAlertaMaisRecente.strftime('%d/%m/%Y'))
+        msgConsulta += '\nÚLTIMO REGISTRO: ' + str(dataAlertaMaisRecente.strftime('%d/%m/%Y'))
+    else:
+        msgConsulta += '\nÚLTIMO REGISTRO: ' + NADA_CONSTA
+
+    if inadimplencia > 0:
+        msgConsulta += '\n\nINADIMPLÊNCIAS: ' + str(inadimplencia)
+    else:
+        msgConsulta += '\n\nINADIMPLÊNCIAS: ' + NADA_CONSTA
+
     if dataInadimplenciaMaisRecente is not None:
-        msgConsulta +=  '\nO último registro de inadimplência foi feito em {}.'.format(dataInadimplenciaMaisRecente.strftime('%d/%m/%Y'))
+        msgConsulta += '\nÚLTIMO REGISTRO: ' + str(dataInadimplenciaMaisRecente.strftime('%d/%m/%Y'))
+    else:
+        msgConsulta += '\nÚLTIMO REGISTRO: ' + NADA_CONSTA
+
+    #msgConsulta = ''
+    #if alerta > 0 and inadimplencia > 0:
+    #    msgConsulta += 'Existe(m) {} registro(s) de alertas e {} registro(s) de inadimplência.'.format(inadimplencia, alerta)
+    #elif alerta > 0:
+    #    msgConsulta += 'Existe(m) {} registro(s) de alertas.'.format(alerta)
+    #elif inadimplencia > 0:
+    #    msgConsulta += 'Existe(m) {} registro(s) de inadimplência.'.format(inadimplencia)
+    #msgConsulta += '\nO documento consultado pertence a {}.'.format(nomeConsumidor)
+    #
+    #global dataAlertaMaisRecente
+    #global dataInadimplenciaMaisRecente
+    #if dataAlertaMaisRecente is not None:
+    #    msgConsulta +=  '\nO último registro de alerta foi feito em {}.'.format(dataAlertaMaisRecente.strftime('%d/%m/%Y'))
+    #if dataInadimplenciaMaisRecente is not None:
+    #    msgConsulta +=  '\nO último registro de inadimplência foi feito em {}.'.format(dataInadimplenciaMaisRecente.strftime('%d/%m/%Y'))
+
+    #CRIAR FUNÇÃO LIMPA CONSULTA
+    nomeConsumidor = None
+    numDocumento = None
+    dataAlertaMaisRecente = None
+    dataInadimplenciaMaisRecente = None
 
     bot.send_message(update.message.chat_id, text=msgConsulta)
     bot.send_message(update.message.chat_id,
